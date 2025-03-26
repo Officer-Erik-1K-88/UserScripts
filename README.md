@@ -3,4 +3,4 @@
 
 
 ## Directory
-* [Hidive Video Toggles](usHTML/HidiveVideoToggles.html)
+* [Hidive Video Toggles](doc/HidiveVideoToggles.html)
