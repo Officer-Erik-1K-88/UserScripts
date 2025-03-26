@@ -5,6 +5,7 @@
 // @version      1.0
 // @author       Officer Erik 1K-88
 // @description  Currently we only have one toggle, it's for the HIDIVE subtitles being able to be switched between Off and English with the 'C' key.
+// @license      BSD 3-Clause
 // @match        https://www.hidive.com/video/*
 // @grant        GM.getValue
 // @grant        GM.setValue

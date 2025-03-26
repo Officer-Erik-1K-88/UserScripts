@@ -2,8 +2,9 @@
 // @name         HIDIVE Hide Video Scrollbar
 // @namespace    Violentmonkey Scripts
 // @version      1.0
-// @description  Hide the scrollbar on HIDIVE video pages but keep scrolling functionality
+// @description  Hide the scrollbar on HIDIVE video pages but keep scrolling functionality. This is a fix for The browsers that, for some reason, have a scrollbar appear on the Hidive video player page.
 // @author       Officer Erik 1K-88
+// @license      BSD 3-Clause
 // @match        https://www.hidive.com/video/*
 // @grant        none
 // @run-at       document-start

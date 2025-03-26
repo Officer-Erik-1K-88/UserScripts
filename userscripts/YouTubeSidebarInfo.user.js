@@ -2,7 +2,8 @@
 // @name         YouTube Sidebar Info with Wide Related & Playlist Under Player
 // @namespace    ViolentMonkey.YTLayoutMod
 // @version      5.0
-// @description  Moves metadata/comments to a fixed right sidebar and repositions related/playlist below player with player-matching width (not narrow). Works even on SPA navigation (YouTube dynamic loading). Matches YT's look with wide layout preserved.
+// @description  Moves metadata/comments to a fixed right sidebar and repositions related/playlist below player with player-matching width (not narrow). Works even on SPA navigation (YouTube dynamic loading). Matches YT's look with wide layout preserved. NOTICE: THIS SCRIPT IS BUGGY AND DOESN'T WORK RIGHT.
+// @license      BSD 3-Clause
 // @author       ChatGPT
 // @match        https://www.youtube.com/watch*
 // @grant        none
