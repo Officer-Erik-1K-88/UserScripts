@@ -1,6 +1,7 @@
 # UserScripts
- All of my user scripts I created.
+ All of the user scripts I (Officer Erik 1K-88) created.
 
 
 ## Directory
 * [Hidive Video Toggles](doc/HidiveVideoToggles.html)
+* [Hidive Hide Video Scrollbar](doc/HidiveHVS.html)
