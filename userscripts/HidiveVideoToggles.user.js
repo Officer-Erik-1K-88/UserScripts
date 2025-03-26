@@ -1,4 +1,3 @@
-// Created on 3/26/2025, 10:02:12 AM GMT+0500 (CDT)
 // ==UserScript==
 // @name         HIDIVE Video Toggles
 // @namespace    Violentmonkey Scripts
@@ -11,6 +10,7 @@
 // @grant        GM.setValue
 // @grant        GM.info
 // ==/UserScript==
+// Created on 3/26/2025, 10:02:12 AM GMT+0500 (CDT)
 
 (async function () {
     'use strict';
