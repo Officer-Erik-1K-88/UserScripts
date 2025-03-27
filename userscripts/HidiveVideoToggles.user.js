@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HIDIVE Video Toggles
 // @namespace    Violentmonkey Scripts
-// @version      1.0
+// @version      1.01
 // @author       Officer Erik 1K-88
 // @description  Currently we only have one toggle, it's for the HIDIVE subtitles being able to be switched between Off and English with the 'C' key.
 // @license      BSD 3-Clause
@@ -12,98 +12,123 @@
 // ==/UserScript==
 // Created on 3/26/2025, 10:02:12 AM GMT+0500 (CDT)
 
-(async function () {
-    'use strict';
+/**
+ * Formats a date object.
+ * @param {Date} date The Date object.
+ * @returns The formatted string.
+ */
+function formatDate(date) {
+    const pad = (n, width = 2) => String(n).padStart(width, '0');
 
-	const getVal = async (key, def) => {
-        return await GM.getValue(key, def);
-	};
-	const setVal = async (key, value) => {
-		return await GM.setValue(key, value);
-	};
+    const year = date.getFullYear();
+    const month = pad(date.getMonth() + 1);
+    const day = pad(date.getDate());
+    const hour = pad(date.getHours());
+    const minute = pad(date.getMinutes());
+    const second = pad(date.getSeconds());
+    const milliseconds = pad(date.getMilliseconds(), 3);
 
-    /**
-     * Formats a date object.
-     * @param {Date} date The Date object.
-     * @returns The formatted string.
-     */
-    function formatDate(date) {
-        const pad = (n, width = 2) => String(n).padStart(width, '0');
+    // GMT offset in ±HHMM format
+    const offsetMinutes = date.getTimezoneOffset();
+    const absOffset = Math.abs(offsetMinutes);
+    const offsetSign = offsetMinutes <= 0 ? '+' : '-';
+    const offsetHours = pad(Math.floor(absOffset / 60));
+    const offsetMins = pad(absOffset % 60);
+    const gmtOffset = `GMT${offsetSign}${offsetHours}${offsetMins}`;
 
-        const year = date.getFullYear();
-        const month = pad(date.getMonth() + 1);
-        const day = pad(date.getDate());
-        const hour = pad(date.getHours());
-        const minute = pad(date.getMinutes());
-        const second = pad(date.getSeconds());
-        const milliseconds = pad(date.getMilliseconds(), 3);
+    // Time zone name (e.g., Eastern Daylight Time)
+    const tzName = date.toString().match(/\(([^)]+)\)/)?.[1] || Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-        // GMT offset in ±HHMM format
-        const offsetMinutes = date.getTimezoneOffset();
-        const absOffset = Math.abs(offsetMinutes);
-        const offsetSign = offsetMinutes <= 0 ? '+' : '-';
-        const offsetHours = pad(Math.floor(absOffset / 60));
-        const offsetMins = pad(absOffset % 60);
-        const gmtOffset = `GMT${offsetSign}${offsetHours}${offsetMins}`;
+    return `${year}-${month}-${day}  ${hour}:${minute}:${second}.${milliseconds}  (${gmtOffset} [${tzName}])`;
+}
 
-        // Time zone name (e.g., Eastern Daylight Time)
-        const tzName = date.toString().match(/\(([^)]+)\)/)?.[1] || Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-        return `${year}-${month}-${day}  ${hour}:${minute}:${second}.${milliseconds}  (${gmtOffset} [${tzName}])`;
+class Logger {
+    constructor(name) {
+        this.information = {
+            name: name,
+            timeElapsed: 0,
+            logs: []
+        };
+        this.counterNames = [];
+        this.counterInfo = {};
+        this.startTime = Date.now();
     }
 
-    let subtitles = [];
-    let selected = undefined;
-    let currentLabel = "";
-    var storedSelection = await getVal("selsub", "Subtitles Off");
-    let subtitlesOff = undefined;
-    let americanEnglish = undefined;
-    let anyEnglish = undefined;
-    const interval = 1000;
-    const timeout = 10000;
-    const information = {
-        name: `${GM.info.script.name}'s Entry Checking`,
-        timeElapsed: 0,
-        logs: []
-    };
-    const logger = {
-        message: (type, msg) => {
-            information.logs.push({
-                logType: type,
-                message: msg,
-                time: new Date(Date.now()).toTimeString()
+    get logs() {
+        return this.information.logs;
+    }
+
+    clear() {
+        this.startTime = Date.now();
+        this.information.timeElapsed = 0;
+        this.counterNames = [];
+        this.counterInfo = {};
+        this.information.logs = []
+    }
+
+    send() {
+        this.information.timeElapsed = Date.now() - this.startTime;
+        console.log(this.information);
+    }
+
+    message(type, ...msg) {
+        this.logs.push({
+            logType: type,
+            message: (msg.length == 1 ? msg[0] : msg),
+            time: new Date(Date.now()).toTimeString()
+        });
+    }
+
+    error(...msg) {
+        this.message("error", ...msg);
+    }
+
+    warn(...msg) {
+        this.message("warn", ...msg);
+    }
+
+    log(...msg) {
+        this.message("log", ...msg);
+    }
+
+    count(label) {
+        if (!this.counterNames.includes(label)) {
+            const index = this.logs.length;
+            this.counterInfo[label] = index;
+            this.counterNames.push(label);
+            this.message("counter", {
+                label: label,
+                count: 0,
+                time: {
+                    start: formatDate(new Date(Date.now())),
+                    end: ""
+                }
             });
-        },
-        error: msg => {
-            logger.message("error", msg);
-        },
-        warn: msg => {
-            logger.message("warn", msg);
-        },
-        log: msg => {
-            logger.message("log", msg);
-        },
-        counterNames: [],
-        counterInfo: {},
-        count: label => {
-            if (!logger.counterNames.includes(label)) {
-                const index = information.logs.length;
-                logger.counterInfo[label] = index;
-                logger.counterNames.push(label);
-                logger.message("counter", {
-                    label: label,
-                    count: 0,
-                    time: {
-                        start: formatDate(new Date(Date.now())),
-                        end: ""
-                    }
-                });
-            }
-            const countInfo = information.logs[logger.counterInfo[label]].message;
-            countInfo.count += 1;
-            countInfo.time.end = formatDate(new Date(Date.now()));
         }
-    };
+        const countInfo = this.logs[this.counterInfo[label]].message;
+        countInfo.count += 1;
+        countInfo.time.end = formatDate(new Date(Date.now()));
+    }
+}
+
+async function getVal(key, def) {
+    return await GM.getValue(key, def);
+}
+
+async function setVal(key, value) {
+    return await GM.setValue(key, value);
+};
+
+let subtitles = [];
+let selected = undefined;
+let currentLabel = "";
+let subtitlesOff = undefined;
+let americanEnglish = undefined;
+let anyEnglish = undefined;
+
+(async function () {
+    'use strict';
+    var storedSelection = await getVal("selsub", "Subtitles Off");
 
     /**
      * The function to be called when a key is pressed down.
@@ -134,59 +159,87 @@
 		}
     };
 
-    const startTime = Date.now();
+    const e1c = () => {
+        if (currentLabel !== storedSelection) {
+            const storedElm = subtitles.find(el => el.getAttribute('aria-label') === storedSelection);
+            if (storedElm) {
+                storedElm.click();
+            }
+        }
+    };
 
-    const check = setInterval(async () => {
-        logger.count("Entry Checking Count");
-        const entries = Array.from(document.querySelectorAll('div.preferences-panel__entry'));
-        let ending = false;
-        if (entries.length != 0) {
-            ending = true;
-            const subtitlesEntry = entries.find(el => {
-                const first = el.firstElementChild;
-                if (first == null || !first.classList.contains("preferences-panel__title")) {
-                    return false;
-                }
-                return first.textContent === "Subtitles";
-            });
-            //logger.log(entries);
-            if (subtitlesEntry) {
-                subtitles = Array.from(subtitlesEntry.getElementsByTagName("ul").item(0).children);
+    const e2c = () => {
+        document.addEventListener('keydown', onKeyDown);
+    };
 
-                selected = subtitles.find(el => el.classList.contains('preferences-panel__option--selected'));
-                currentLabel = (selected ? selected.getAttribute('aria-label') || '' : '');
-
-                subtitlesOff = subtitles.find(el => el.getAttribute('aria-label') === 'Subtitles Off');
-                americanEnglish = subtitles.find(el => el.getAttribute('aria-label') === 'American English');
-                anyEnglish = subtitles.find(el => {
-                    const label = el.getAttribute('aria-label') || '';
-                    return label.includes('English');
+    function checker(
+        end1Callback = undefined, end2Callback = undefined,
+        interval = 1000, timeout = 10000,
+        logger = new Logger(`${GM.info.script.name}'s Entry Checking`)
+    ) {
+        const startTime = Date.now();
+        const check = setInterval(async () => {
+            logger.count("Entry Checking Count");
+            const entries = Array.from(document.querySelectorAll('div.preferences-panel__entry'));
+            let ending = false;
+            if (entries.length != 0) {
+                ending = true;
+                const subtitlesEntry = entries.find(el => {
+                    const first = el.firstElementChild;
+                    if (first == null || !first.classList.contains("preferences-panel__title")) {
+                        return false;
+                    }
+                    return first.textContent === "Subtitles";
                 });
-
-                if (!subtitlesOff) {
-                    ending = false;
-                    logger.warn("'Subtitles Off' wasn't there, checking again.");
-                } else {
-                    if (currentLabel !== storedSelection) {
-                        const storedElm = subtitles.find(el => el.getAttribute('aria-label') === storedSelection);
-                        if (storedElm) {
-                            storedElm.click();
+                //logger.log(entries);
+                if (subtitlesEntry) {
+                    subtitles = Array.from(subtitlesEntry.getElementsByTagName("ul").item(0).children);
+    
+                    selected = subtitles.find(el => el.classList.contains('preferences-panel__option--selected'));
+                    currentLabel = (selected ? selected.getAttribute('aria-label') || '' : '');
+    
+                    subtitlesOff = subtitles.find(el => el.getAttribute('aria-label') === 'Subtitles Off');
+                    americanEnglish = subtitles.find(el => el.getAttribute('aria-label') === 'American English');
+                    anyEnglish = subtitles.find(el => {
+                        const label = el.getAttribute('aria-label') || '';
+                        return label.includes('English');
+                    });
+    
+                    if (!subtitlesOff) {
+                        ending = false;
+                        logger.warn("'Subtitles Off' wasn't there, checking again.");
+                    } else {
+                        if (end1Callback) {
+                            end1Callback();
                         }
                     }
+                } else {
+                    ending = false;
+                    logger.warn("Subtitles not found, retrying.");
                 }
-            } else {
-                ending = false;
-                logger.warn("Subtitles not found, retrying.");
+            } else if (Date.now() - startTime > timeout) {
+                ending = true;
+                logger.error(`Entry Elements not found within time limit: ${timeout} milliseconds`);
             }
-        } else if (Date.now() - startTime > timeout) {
-            ending = true;
-            logger.error(`Entry Elements not found within time limit: ${timeout} milliseconds`);
+            if (ending) {
+                clearInterval(check);
+                if (end2Callback) {
+                    end2Callback();
+                }
+                logger.send();
+            }
+        }, interval);
+    }
+    
+    checker(e1c, e2c);
+
+    let previousUrl = window.location.href;
+
+    setInterval(function() {
+        if (window.location.href !== previousUrl) {
+            console.log("URL changed (polling):", window.location.href);
+            checker();
+            previousUrl = window.location.href;
         }
-        if (ending) {
-            clearInterval(check);
-            document.addEventListener('keydown', onKeyDown);
-            information.timeElapsed = Date.now() - startTime;
-            console.log(information);
-        }
-    }, interval);
+    }, 100); // Check every 100 milliseconds
 })();
