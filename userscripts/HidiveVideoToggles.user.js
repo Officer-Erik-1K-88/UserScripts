@@ -264,6 +264,8 @@ function styleChanges(add=true) {
         styleChanges();
     }
 
+    let isOut = false;
+
     setInterval(function() {
         const currentUrl = window.location.href;
         if (currentUrl !== previousUrl) {
@@ -275,9 +277,13 @@ function styleChanges(add=true) {
                 } else {
                     checker();
                 }
+                isOut = false;
             } else {
-                styleChanges(false);
-                document.removeEventListener("keydown", onKeyDown);
+                if (!isOut) {
+                    styleChanges(false);
+                    document.removeEventListener("keydown", onKeyDown);
+                    isOut = true;
+                }
             }
             previousUrl = currentUrl;
         }
