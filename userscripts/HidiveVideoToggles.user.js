@@ -9,6 +9,8 @@
 // @grant        GM.getValue
 // @grant        GM.setValue
 // @grant        GM.info
+// @downloadURL  https://update.greasyfork.org/scripts/530952/HIDIVE%20Video%20Toggles.user.js
+// @updateURL    https://update.greasyfork.org/scripts/530952/HIDIVE%20Video%20Toggles.meta.js
 // ==/UserScript==
 // Created on 3/26/2025, 10:02:12 AM GMT+0500 (CDT)
 
