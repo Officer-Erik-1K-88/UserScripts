@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>UserScripts</title>
+        <link rel="stylesheet" href="../resources/css/style.css" />
+        <link rel="stylesheet" href="../resources/css/navigation.css" />
+    </head>
+
+    <body>
+        <header>
+            <h1>UserScripts</h1>
+            <menu id="mainMenu">
+                <nav id="navigationTemplate">
+                    <ul>
+                      <!-- Parent Menu Item -->
+                      <li data-id="menu-1" data-parent="none">
+                        <a href="#">Home</a>
+                      </li>
+                  
+                      <!-- Submenu Item stored separately -->
+                      <li data-id="menu-1-1" data-parent="menu-1">
+                        <a href="#">Overview</a>
+                      </li>
+                  
+                      <li data-id="menu-1-2" data-parent="menu-1" data-selected="true">
+                        <a href="#">Settings</a>
+                      </li>
+                  
+                      <!-- Sub-submenu Item -->
+                      <li data-id="menu-1-2-1" data-parent="menu-1-2">
+                        <a href="#">Profile Settings</a>
+                      </li>
+                    </ul>
+                  </nav>
+            </menu>
+        </header>
+        <main>
+            <p>This is test display content.</p>
+        </main>
+        <footer></footer>
+        <script src="../resources/js/navigation.js"></script>
+    </body>
+
+</html>

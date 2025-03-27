@@ -1,0 +1,135 @@
+header {
+    background-color: #333;
+    color: white;
+    padding: 1rem;
+}
+
+.menu-toggle, .submenu-toggle, .close-menu {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.menu-toggle {
+    display: none;
+}
+
+.close-menu {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    display: none;
+    z-index: 2000;
+}
+
+.submenu-toggle {
+    margin-left: -0.5rem;
+    font-size: 0.856rem;
+    border-radius: 0 5px 5px 0 !important;
+}
+
+.navigation ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0px;
+    display: flex;
+    gap: 1rem;
+}
+
+.navigation li {
+    position: relative;
+}
+
+.navigation a {
+    display: inline-block;
+    text-decoration: none;
+}
+
+.has-submenu {
+    border-radius: 5px 0 0 5px !important;
+}
+
+.navigation .item {
+    /*display: block;*/
+    padding: 0.5rem 1rem;
+    color: white;
+    background-color: #444;
+    border-radius: 5px;
+}
+
+.navigation .item:hover {
+    background-color: #666;
+}
+
+/* Selected link and its parents */
+.navigation .selected > .item {
+    background-color: #2196F3;
+    font-weight: bold;
+}
+
+/* Submenu */
+.navigation ul ul {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: -4px;
+    padding: 4px;
+    flex-direction: column;
+    background-color: #333;
+    min-width: 160px;
+    z-index: 1000;
+}
+
+.navigation ul ul li {
+    width: 100%;
+}
+
+.navigation li:hover > ul, .navigation li.active > ul {
+    display: flex;
+}
+
+.navigation li > ul, .navigation li > ul.deactive {
+    display: none;
+}
+
+.navigation ul ul ul {
+    top: 0;
+    left: 100%;
+}
+
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: inline-block;
+    }
+
+    .navigation {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: #222;
+        flex-direction: column;
+        padding-top: 3rem;
+        overflow-y: auto;
+        z-index: 1500;
+    }
+
+    .navigation.active {
+        display: flex;
+    }
+
+    .navigation ul {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .navigation ul ul {
+        position: static;
+        display: none;
+        background-color: #111;
+    }
+}

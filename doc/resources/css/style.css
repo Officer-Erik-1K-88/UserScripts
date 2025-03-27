@@ -1,8 +1,18 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+}
+
+main {
+    margin: 8px;
+}
+
 kbd {
     border: 0.5px solid black;
     padding: 1px 4px;
     font-weight: 600;
 }
+
 h6 {
     display: block;
     font-size: 1em;
@@ -12,6 +22,7 @@ h6 {
 h6.sub {
     font-size: 0.8em;
 }
+
 .listed {
     list-style-type: none;
 }

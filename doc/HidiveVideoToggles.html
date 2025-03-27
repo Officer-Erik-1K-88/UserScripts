@@ -1,33 +1,56 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
     <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>UserScripts: Hidive Video Toggles</title>
-        <link rel="stylesheet" href="./resources/css/style.css">
+        <link rel="stylesheet" href="./resources/css/style.css" />
+        <link rel="stylesheet" href="./resources/css/navigation.css" />
     </head>
+
     <body>
-        <h1>Hidive Video Toggles</h1>
-        <p><a href="./home.html">Go Back to Home Page</a></p>
-        <p>Currently, we only have one toggle. And one special.</p>
-        <div>
-            <h2>Toggles:</h2>
-            <ul class="listed">
-                <li>
-                    <h6>Subtitles</h6>
-                    <p>Toggle with: <kbd>C</kbd> key</p>
-                    <h6 class="sub">Description:</h6>
-                    <p>Switch between <b>Off</b> and <b>last selected</b>. If there is no value in last selected, then it will default to <b>English</b>.</p>
-                    <p>The selected option will be saved to a value.</p>
-                </li>
-            </ul>
-        </div>
-        <div>
-            <h2>Special:</h2>
-            <ul class="listed">
-                <li>
-                    <h6>Scrollbar Fix</h6>
-                    <p>Hide the scrollbar on HIDIVE video pages but keep scrolling functionality. This is a fix for the browsers that, for some reason, have a scrollbar appear on the Hidive video player page.</p>
-                </li>
-            </ul>
-        </div>
+        <header>
+            <h1>Hidive Video Toggles</h1>
+            <menu id="mainMenu">
+                <nav id="navigationTemplate">
+                    <ul>
+                      <li data-id="menu-1" data-parent="none">
+                        <a href="./home.html">Home</a>
+                      </li>
+                      <li data-id="menu-2" data-parent="none" data-selected="true">
+                        <a href="./HidiveVideoToggles.html">Hidive Video Toggles</a>
+                      </li>
+                    </ul>
+                  </nav>
+            </menu>
+        </header>
+        <main>
+            <p>Currently, we only have one toggle. And one special.</p>
+            <div>
+                <h2>Toggles:</h2>
+                <ul class="listed">
+                    <li>
+                        <h6>Subtitles</h6>
+                        <p>Toggle with: <kbd>C</kbd> key</p>
+                        <h6 class="sub">Description:</h6>
+                        <p>Switch between <b>Off</b> and <b>last selected</b>. If there is no value in last selected, then it will default to <b>English</b>.</p>
+                        <p>The selected option will be saved to a value.</p>
+                    </li>
+                </ul>
+            </div>
+            <div>
+                <h2>Special:</h2>
+                <ul class="listed">
+                    <li>
+                        <h6>Scrollbar Fix</h6>
+                        <p>Hide the scrollbar on HIDIVE video pages but keep scrolling functionality. This is a fix for the browsers that, for some reason, have a scrollbar appear on the Hidive video player page.</p>
+                    </li>
+                </ul>
+            </div>
+        </main>
+        <footer></footer>
+        <script src="./resources/js/navigation.js"></script>
     </body>
+
 </html>
