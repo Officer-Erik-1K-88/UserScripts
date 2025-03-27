@@ -4,4 +4,3 @@
 
 ## Directory
 * [Hidive Video Toggles](doc/HidiveVideoToggles.html)
-* [Hidive Hide Video Scrollbar](doc/HidiveHVS.html)

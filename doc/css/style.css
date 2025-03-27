@@ -12,10 +12,10 @@ h6 {
 h6.sub {
     font-size: 0.8em;
 }
-#toggles {
+.listed {
     list-style-type: none;
 }
-#toggles li {
+.listed li {
     border: 1px solid black;
     padding-left: 8px;
 }

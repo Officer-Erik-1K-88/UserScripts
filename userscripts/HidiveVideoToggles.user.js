@@ -128,6 +128,25 @@ let anyEnglish = undefined;
 
 (async function () {
     'use strict';
+
+    // Specials
+
+    // Inject CSS to hide the scrollbar but still allow scrolling
+    const style = document.createElement('style');
+    style.textContent = `
+        /* Hide scrollbar for all elements */
+        ::-webkit-scrollbar {
+            width: 0px;
+            height: 0px;
+        }
+        html, body {
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none;  /* IE 10+ */
+        }
+    `;
+    document.documentElement.appendChild(style);
+
+    // Toggles
     var storedSelection = await getVal("selsub", "Subtitles Off");
 
     /**
