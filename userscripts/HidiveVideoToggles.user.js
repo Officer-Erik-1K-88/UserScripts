@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HIDIVE Video Toggles
 // @namespace    Violentmonkey Scripts
-// @version      1.06
+// @version      1.07
 // @author       Officer Erik 1K-88
 // @description  Currently we only have one toggle, it's for the HIDIVE subtitles being able to be switched between Off and the last selected subtitles (Defaults to English when no last selected exists) with the 'C' key.
 // @license      BSD 3-Clause
@@ -270,7 +270,7 @@ function styleChanges(add=true) {
 
     if (previousUrl.includes("hidive.com/video")) {
         if (stored.othersubtitle == "") {
-            othersubtitle = "English";
+            stored.othersubtitle = "English";
             await setVal("othersubtitle", stored.othersubtitle);
         }
         checker(e2c);
