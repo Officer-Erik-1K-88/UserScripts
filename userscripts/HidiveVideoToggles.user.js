@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name         HIDIVE Video Toggles
 // @namespace    Violentmonkey Scripts
-// @version      1.02
+// @version      1.03
 // @author       Officer Erik 1K-88
 // @description  Currently we only have one toggle, it's for the HIDIVE subtitles being able to be switched between Off and English with the 'C' key.
 // @license      BSD 3-Clause
-// @match        https://www.hidive.com/video/*
+// @match        https://www.hidive.com/*
 // @grant        GM.getValue
 // @grant        GM.setValue
 // @grant        GM.info
@@ -126,27 +126,34 @@ let subtitlesOff = undefined;
 let americanEnglish = undefined;
 let anyEnglish = undefined;
 
+function styleChanges(add=true) {
+    if (add) {
+        // Inject CSS to hide the scrollbar but still allow scrolling
+        const style = document.createElement('style');
+        style.id = "HHVSstyling";
+        style.textContent = `
+            /* Hide scrollbar for all elements */
+            ::-webkit-scrollbar {
+                width: 0px;
+                height: 0px;
+            }
+            html, body {
+                scrollbar-width: none; /* Firefox */
+                -ms-overflow-style: none;  /* IE 10+ */
+            }
+        `;
+        document.documentElement.appendChild(style);
+    } else {
+        const style = document.getElementById("HHVSstyling");
+        if (style) {
+            style.remove();
+        }
+    }
+}
+
 (async function () {
     'use strict';
 
-    // Specials
-
-    // Inject CSS to hide the scrollbar but still allow scrolling
-    const style = document.createElement('style');
-    style.textContent = `
-        /* Hide scrollbar for all elements */
-        ::-webkit-scrollbar {
-            width: 0px;
-            height: 0px;
-        }
-        html, body {
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none;  /* IE 10+ */
-        }
-    `;
-    document.documentElement.appendChild(style);
-
-    // Toggles
     var storedSelection = await getVal("selsub", "Subtitles Off");
 
     /**
@@ -249,16 +256,30 @@ let anyEnglish = undefined;
             }
         }, interval);
     }
-    
-    checker(e1c, e2c);
 
     let previousUrl = window.location.href;
 
+    if (previousUrl.includes("hidive.com/video")) {
+        checker(e1c, e2c);
+        styleChanges();
+    }
+
     setInterval(function() {
-        if (window.location.href !== previousUrl) {
-            console.log("URL changed (polling):", window.location.href);
-            checker();
-            previousUrl = window.location.href;
+        const currentUrl = window.location.href;
+        if (currentUrl !== previousUrl) {
+            console.log("URL changed (polling):", currentUrl);
+            if (currentUrl.includes("hidive.com/video")) {
+                if (!previousUrl.includes("hidive.com/video")) {
+                    checker(e1c, e2c);
+                    styleChanges();
+                } else {
+                    checker();
+                }
+            } else {
+                styleChanges(false);
+                document.removeEventListener("keydown", onKeyDown);
+            }
+            previousUrl = currentUrl;
         }
     }, 100); // Check every 100 milliseconds
 })();
