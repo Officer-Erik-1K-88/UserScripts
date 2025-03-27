@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HIDIVE Video Toggles
 // @namespace    Violentmonkey Scripts
-// @version      1.03
+// @version      1.04
 // @author       Officer Erik 1K-88
 // @description  Currently we only have one toggle, it's for the HIDIVE subtitles being able to be switched between Off and English with the 'C' key.
 // @license      BSD 3-Clause
