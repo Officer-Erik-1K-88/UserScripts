@@ -7,6 +7,7 @@
 // @license      BSD 3-Clause
 // @match        https://www.hidive.com/*
 // @grant        GM.getValue
+// @grant        GM.getValues
 // @grant        GM.setValue
 // @grant        GM.info
 // @downloadURL  https://update.greasyfork.org/scripts/530952/HIDIVE%20Video%20Toggles.user.js
