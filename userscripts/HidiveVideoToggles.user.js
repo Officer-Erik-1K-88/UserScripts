@@ -185,21 +185,12 @@ function styleChanges(add=true) {
 		}
     };
 
-    const e1c = () => {
-        if (currentLabel !== storedSelection) {
-            const storedElm = subtitles.find(el => el.getAttribute('aria-label') === storedSelection);
-            if (storedElm) {
-                storedElm.click();
-            }
-        }
-    };
-
     const e2c = () => {
         document.addEventListener('keydown', onKeyDown);
     };
 
     function checker(
-        end1Callback = undefined, end2Callback = undefined,
+        endCallback = undefined,
         interval = 1000, timeout = 10000,
         logger = new Logger(`${GM.info.script.name}'s Entry Checking`)
     ) {
@@ -235,8 +226,11 @@ function styleChanges(add=true) {
                         ending = false;
                         logger.warn("'Subtitles Off' wasn't there, checking again.");
                     } else {
-                        if (end1Callback) {
-                            end1Callback();
+                        if (currentLabel !== storedSelection) {
+                            const storedElm = subtitles.find(el => el.getAttribute('aria-label') === storedSelection);
+                            if (storedElm) {
+                                storedElm.click();
+                            }
                         }
                     }
                 } else {
@@ -249,8 +243,8 @@ function styleChanges(add=true) {
             }
             if (ending) {
                 clearInterval(check);
-                if (end2Callback) {
-                    end2Callback();
+                if (endCallback) {
+                    endCallback();
                 }
                 logger.send();
             }
@@ -260,7 +254,7 @@ function styleChanges(add=true) {
     let previousUrl = window.location.href;
 
     if (previousUrl.includes("hidive.com/video")) {
-        checker(e1c, e2c);
+        checker(e2c);
         styleChanges();
     }
 
@@ -272,7 +266,7 @@ function styleChanges(add=true) {
             console.log("URL changed (polling):", currentUrl);
             if (currentUrl.includes("hidive.com/video")) {
                 if (!previousUrl.includes("hidive.com/video")) {
-                    checker(e1c, e2c);
+                    checker(e2c);
                     styleChanges();
                 } else {
                     checker();
