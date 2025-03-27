@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         HIDIVE Video Toggles
 // @namespace    Violentmonkey Scripts
-// @version      1.04
+// @version      1.05
 // @author       Officer Erik 1K-88
-// @description  Currently we only have one toggle, it's for the HIDIVE subtitles being able to be switched between Off and English with the 'C' key.
+// @description  Currently we only have one toggle, it's for the HIDIVE subtitles being able to be switched between Off and the last selected subtitles (Defaults to English when no last selected exists) with the 'C' key.
 // @license      BSD 3-Clause
 // @match        https://www.hidive.com/*
 // @grant        GM.getValue
@@ -117,6 +117,10 @@ async function getVal(key, def) {
     return await GM.getValue(key, def);
 }
 
+async function getVals(keys) {
+    return await GM.getValues(keys);
+}
+
 async function setVal(key, value) {
     return await GM.setValue(key, value);
 };
@@ -125,8 +129,7 @@ let subtitles = [];
 let selected = undefined;
 let currentLabel = "";
 let subtitlesOff = undefined;
-let americanEnglish = undefined;
-let anyEnglish = undefined;
+let otherSub = undefined;
 
 function styleChanges(add=true) {
     if (add) {
@@ -156,7 +159,10 @@ function styleChanges(add=true) {
 (async function () {
     'use strict';
 
-    var storedSelection = await getVal("selsub", "Subtitles Off");
+    const stored = await getVals({
+        selsub: "Subtitles Off",
+        othersubtitle: ""
+    });
 
     /**
      * The function to be called when a key is pressed down.
@@ -172,18 +178,21 @@ function styleChanges(add=true) {
 			if (currentLabel !== 'Subtitles Off') {
 				// If it's not already off, turn it off
 				if (subtitlesOff) subtitlesOff.click();
-				storedSelection = "Subtitles Off";
+				currentLabel = "Subtitles Off";
 			} else {
-				// Otherwise, try American English, or fallback to any English
-				if (americanEnglish) {
-					americanEnglish.click();
-					storedSelection = "American English";
-				} else if (anyEnglish) {
-					anyEnglish.click();
-					storedSelection = anyEnglish.getAttribute('aria-label');
+				// Otherwise, try subtitles, or alert that it doesn't exits.
+				if (otherSub) {
+					otherSub.click();
+					currentLabel = otherSub.getAttribute('aria-label');
+				} else {
+                    alert(`${otherSub.getAttribute('aria-label')} subtitles aren't avaliable.`);
+                    return;
 				}
 			}
-			await setVal("selsub", storedSelection);
+            if (currentLabel !== stored.selsub) {
+                stored.selsub = currentLabel;
+			    await setVal("selsub", stored.selsub);
+            }
 		}
     };
 
@@ -218,18 +227,21 @@ function styleChanges(add=true) {
                     currentLabel = (selected ? selected.getAttribute('aria-label') || '' : '');
     
                     subtitlesOff = subtitles.find(el => el.getAttribute('aria-label') === 'Subtitles Off');
-                    americanEnglish = subtitles.find(el => el.getAttribute('aria-label') === 'American English');
-                    anyEnglish = subtitles.find(el => {
-                        const label = el.getAttribute('aria-label') || '';
-                        return label.includes('English');
-                    });
+                    if (stored.othersubtitle === "English") {
+                        otherSub = subtitles.find(el => {
+                            const label = el.getAttribute('aria-label') || '';
+                            return label.includes('English');
+                        });
+                    } else {
+                        otherSub = subtitles.find(el => el.getAttribute('aria-label') === stored.othersubtitle);
+                    }
     
                     if (!subtitlesOff) {
                         ending = false;
                         logger.warn("'Subtitles Off' wasn't there, checking again.");
                     } else {
-                        if (currentLabel !== storedSelection) {
-                            const storedElm = subtitles.find(el => el.getAttribute('aria-label') === storedSelection);
+                        if (currentLabel !== stored.selsub) {
+                            const storedElm = subtitles.find(el => el.getAttribute('aria-label') === stored.selsub);
                             if (storedElm) {
                                 storedElm.click();
                             }
@@ -256,13 +268,29 @@ function styleChanges(add=true) {
     let previousUrl = window.location.href;
 
     if (previousUrl.includes("hidive.com/video")) {
+        if (stored.othersubtitle == "") {
+            othersubtitle = "English";
+            await setVal("othersubtitle", stored.othersubtitle);
+        }
         checker(e2c);
         styleChanges();
     }
 
     let isOut = false;
 
-    setInterval(function() {
+    setInterval(async function() {
+        if (subtitles.length != 0) {
+            selected = subtitles.find(el => el.classList.contains('preferences-panel__option--selected'));
+            const label = selected.getAttribute('aria-label');
+            if (label !== 'Subtitles Off' && (label !== stored.othersubtitle || (label.includes("English") && stored.othersubtitle !== "English"))) {
+                if (label.includes("English")) {
+                    stored.othersubtitle = "English";
+                } else {
+                    stored.othersubtitle = label;
+                }
+                await setVal("othersubtitle", stored.othersubtitle);
+            }
+        }
         const currentUrl = window.location.href;
         if (currentUrl !== previousUrl) {
             console.log("URL changed (polling):", currentUrl);
